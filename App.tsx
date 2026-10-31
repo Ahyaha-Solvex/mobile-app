@@ -2,7 +2,7 @@ import "react-native-gesture-handler";
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { AuthProvider } from "./src/context/AuthContext";
 import { CarsProvider } from "./src/context/CarsContext";
 import {
@@ -39,6 +39,9 @@ export default function App() {
   const [popup, setPopup] = useState<PopupState | null>(null);
   const [troubleWaiting, setTroubleWaiting] = useState(false);
   const [truck, setTruck] = useState<TruckInfo | null>(null);
+  // Set once the truck card is closed — keeps the truck alive and pins the app-bar
+  // "follow on map" notification until the user opens the Map.
+  const [truckAck, setTruckAck] = useState(false);
   // Deadline after which we alert the emergency contact if still offline
   const [zoneDeadline, setZoneDeadline] = useState<number | null>(null);
   const popupIdRef = useRef(0);
@@ -98,7 +101,9 @@ export default function App() {
       }
 
       if (type === "troubleshoot_assigned") {
+        // A truck accepted: show the truck card (and re-arm the map bar after it closes).
         setTruck((msg?.truck ?? null) as TruckInfo | null);
+        setTruckAck(false);
         setTroubleWaiting(false);
         return;
       }
@@ -201,11 +206,19 @@ export default function App() {
               </View>
             </Modal>
           ) : null}
-          {truck ? (
+          {truck && !truckAck ? (
             <Modal visible transparent animationType="fade" statusBarTranslucent>
               <View style={styles.backdrop}>
                 <View style={styles.waitCard}>
-                  <TouchableOpacity onPress={() => setTruck(null)} hitSlop={6} style={styles.closeBtn} accessibilityLabel="Close">
+                  <TouchableOpacity
+                    onPress={() => {
+                      // Keep the truck active — close the card and pin the map bar instead.
+                      setTruckAck(true);
+                    }}
+                    hitSlop={6}
+                    style={styles.closeBtn}
+                    accessibilityLabel="Close"
+                  >
                     <Ionicons name="close" size={15} color={colors.textFaint} />
                   </TouchableOpacity>
                   <View style={styles.waitIcon}>
@@ -225,11 +238,51 @@ export default function App() {
               </View>
             </Modal>
           ) : null}
+          {truck && truckAck ? (
+            <TruckFollowBar truck={truck} onPress={() => navigationRef.current?.navigate("Map", { truck })} />
+          ) : null}
           <CrashAlertOverlay visible={crashVisible} onDismiss={() => setCrashVisible(false)} />
           <StatusBar style="auto" />
         </CarsProvider>
       </AuthProvider>
     </SafeAreaProvider>
+  );
+}
+
+/** Floating app-bar notification pinned while a troubleshoot truck is coming.
+ *  Tapping it opens the Map screen, which follows the truck as it moves in.
+ *  Must be rendered under SafeAreaProvider (it reads insets). */
+function TruckFollowBar({ truck, onPress }: { truck: TruckInfo; onPress: () => void }) {
+  const insets = useSafeAreaInsets();
+  const [hidden, setHidden] = useState(false);
+
+  // Hide the bar on the Map screen itself (it's redundant there).
+  useEffect(() => {
+    const update = () => setHidden(navigationRef.current?.getCurrentRoute()?.name === "Map");
+    update();
+    const unsub = navigationRef.current?.addListener("state", update);
+    return unsub;
+  }, []);
+
+  if (hidden) return null;
+  return (
+    <TouchableOpacity
+      style={[styles.trackBar, { top: insets.top + spacing.s }]}
+      onPress={onPress}
+      activeOpacity={0.85}
+      accessibilityLabel="Open map to follow the troubleshoot truck"
+    >
+      <View style={styles.trackBarIcon}>
+        <Ionicons name="construct" size={15} color="#fff" />
+      </View>
+      <View style={styles.trackBarTextWrap}>
+        <Text style={styles.trackBarTitle} numberOfLines={1}>
+          {truck.name ? `${truck.name} is on the way` : "Troubleshoot truck is on the way"}
+        </Text>
+        <Text style={styles.trackBarSub}>Tap to follow it on the map</Text>
+      </View>
+      <Ionicons name="map" size={17} color={colors.textFaint} />
+    </TouchableOpacity>
   );
 }
 
@@ -287,4 +340,29 @@ const styles = StyleSheet.create({
     ...shadow(1),
   },
   callBtnText: { color: "#fff", fontSize: font.body - 1, fontWeight: fontWeight.bold },
+  // Floating app-bar notification for the incoming troubleshoot truck
+  trackBar: {
+    position: "absolute",
+    left: spacing.l,
+    right: spacing.l,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    backgroundColor: colors.surface,
+    borderRadius: radius.l,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    ...shadow(3),
+  },
+  trackBarIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.successDark,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  trackBarTextWrap: { flex: 1 },
+  trackBarTitle: { fontSize: font.small, fontWeight: fontWeight.bold, color: colors.navy },
+  trackBarSub: { fontSize: font.micro, color: colors.textMuted, marginTop: 1 },
 });
