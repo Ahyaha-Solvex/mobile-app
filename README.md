@@ -15,6 +15,9 @@ The main tab. It greets you by name, shows the current state of your cars' care 
 ![Home](docs/screenshots/01-home.png)
 
 - **Ayah card**: Surat Al-Ma'idah 32, *"...if anyone saved a life, it would be as if he saved all mankind."*
+- **Report an accident**: a red button right at the top. Opens a menu to optionally attach a photo (camera or gallery), then broadcasts the accident, with your car's location, live to everyone. The button flashes a green "Reported" confirmation.
+
+![Report an accident](docs/screenshots/12-accident-reported.png)
 - **Protection active**: live status of your care devices (e.g. *12 of 14 devices connected*, with a green dot).
 - **Devices**: device health at a glance, how many are online out of your paired cars, shown as a progress bar. **View all** opens the cars tab.
 

@@ -7,6 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useCars } from "../../context/CarsContext";
 import { colors, spacing, font, fontWeight, shadow } from "../../theme";
 import { ProgressBar } from "../../components/ui";
+import ReportAccidentButton from "../../components/ReportAccidentButton";
 
 const SAFE_TIPS = [
   { icon: "speedometer-outline", title: "Keep a safe distance", body: "Follow the 3-second rule and increase it in rain or fog." },
@@ -51,6 +52,12 @@ export default function HomeScreen() {
           <Text style={styles.avatarText}>{initial}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Report an accident (at the top, always one tap away) */}
+      <ReportAccidentButton
+        latitude={cars[0]?.latitude}
+        longitude={cars[0]?.longitude}
+      />
 
       {/* Quran verse */}
       <View style={styles.ayahCard}>
