@@ -109,6 +109,12 @@ Incident-service side:
 | `trouble` | `troubleshoot_request` → (3 s) `troubleshoot_assigned` (with truck info) | User needs a troubleshoot truck |
 | `truck` | `troubleshoot_assigned` | Manual override — a responder assigns a truck |
 
+When the truck is assigned, the follow bar appears: **"Troubleshoot truck is on the way — Tap to follow it on the map"**, which opens the **Safety map**, where the truck is marked and followed live as it moves in:
+
+![Safety map tracking the troubleshoot truck](docs/screenshots/14-map-truck.png)
+
+The map tracks the truck in real time — the truck marker and your car are placed on the route, which updates as the truck heads toward you.
+
 ---
 
 ## Project layout (mobile)
