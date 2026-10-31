@@ -12,17 +12,19 @@ import {
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors, spacing, radius, font, fontWeight, shadow } from "../theme";
 
-export type PopupVariant = "ambulance" | "firstAid" | "isolated";
+export type PopupVariant = "ambulance" | "firstAid" | "isolated" | "troubleshoot";
 type Phase = "ask" | "timer" | "tracking";
 
 /** Attention-cycling palette for the first-aid request popup (red → orange → yellow). */
 const CYCLE = ["#DC2626", "#F97316", "#EAB308"];
 const YELLOW = "#EAB308";
+const TRUCK_BLUE = "#247DA8";
 
 const AUTO_CLOSE: Record<PopupVariant, number> = {
   ambulance: 8,
   firstAid: 12,
   isolated: 0, // requires an explicit Confirm / Cancel
+  troubleshoot: 8,
 };
 
 const ZONE_OPTIONS = [
@@ -139,7 +141,7 @@ export default function PopupNotification({
   if (!visible) return null;
 
   const accent =
-    variant === "firstAid" ? CYCLE[cycleIdx] : variant === "ambulance" ? "#F97316" : YELLOW;
+    variant === "firstAid" ? CYCLE[cycleIdx] : variant === "ambulance" ? "#F97316" : variant === "troubleshoot" ? TRUCK_BLUE : YELLOW;
   const onAccent = accent === YELLOW ? "#713F12" : "#fff";
   const autoClose = AUTO_CLOSE[variant];
 

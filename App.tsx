@@ -143,6 +143,7 @@ export default function App() {
       navigationRef.current?.navigate("Map", {
         crashLocation: popup.crashLocation,
         crashUser: popup.crashUser,
+        truck: null, // params merge — drop any leftover troubleshoot-truck follow
       });
     } else {
       navigationRef.current?.navigate("Map");

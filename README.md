@@ -90,6 +90,27 @@ Couldn't find emergency info? The red **Help** button (always visible, gently pu
 
 ---
 
+## 🔧 Troubleshoot truck
+
+A crash can need more than first aid — the vehicle itself may need a **troubleshoot truck** (a roadside repair specialist).
+
+The flow:
+
+1. Tap the floating **Help** button → **"How can we help?"**.
+2. Choose **"I need a troubleshoot truck"** (the app auto-falls back to *"I'm in a crash"* after 30 s if you don't pick).
+3. A **waiting card** appears: a troubleshoot truck near you has been notified, and the app will update you as soon as one accepts.
+4. When a truck accepts, the **truck is assigned**: **CrashCare Truck 03** (tel. `+15550102030`). Use the in-card **Call** button or dismiss to pin the follow bar.
+5. The floating **follow bar** — *"Troubleshoot truck is on the way — tap to follow it on the map"* — opens the **Safety map**, which tracks the truck live as it moves in.
+
+Incident-service side:
+
+| Trigger | Broadcast | Meaning |
+|---|---|---|
+| `trouble` | `troubleshoot_request` → (3 s) `troubleshoot_assigned` (with truck info) | User needs a troubleshoot truck |
+| `truck` | `troubleshoot_assigned` | Manual override — a responder assigns a truck |
+
+---
+
 ## Project layout (mobile)
 
 | Path | What it is |

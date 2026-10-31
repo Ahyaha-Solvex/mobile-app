@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import { useCars } from "../../context/CarsContext";
@@ -15,6 +15,7 @@ type TruckParam = { name?: string; phone?: string; latitude: number; longitude: 
 export default function MapScreen() {
   const { cars, loading: carsLoading } = useCars();
   const route = useRoute<any>();
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const crashLocation: Coord | undefined = route.params?.crashLocation;
   const crashUser: string | undefined = route.params?.crashUser;
@@ -164,6 +165,9 @@ export default function MapScreen() {
     <View style={styles.container}>
       {/* White header */}
       <View style={[styles.header, { paddingTop: insets.top + spacing.l }]}>
+        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={8} style={styles.backBtn} accessibilityLabel="Back">
+          <Ionicons name="chevron-back" size={22} color={colors.navy} />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Safety map</Text>
         <View style={styles.livePill}>
           <View style={styles.liveDot} />
@@ -247,6 +251,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  backBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceAlt,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
   },
   headerTitle: { fontSize: font.titleXl, fontWeight: fontWeight.bold, color: colors.navy, letterSpacing: -0.8 },
   livePill: {
