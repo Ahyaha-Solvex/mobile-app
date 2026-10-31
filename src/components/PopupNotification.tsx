@@ -175,6 +175,11 @@ export default function PopupNotification({
           {/* Attention strip — cycles color for first-aid requests */}
           <View style={[styles.strip, { backgroundColor: accent }]} />
 
+          {/* Close button */}
+          <TouchableOpacity style={styles.closeBtn} onPress={close} hitSlop={6} accessibilityLabel="Close">
+            <Ionicons name="close" size={15} color={colors.textFaint} />
+          </TouchableOpacity>
+
           {/* Icon with pulsing halo */}
           <View style={styles.iconStage}>
             <Animated.View
@@ -326,6 +331,20 @@ const styles = StyleSheet.create({
     ...shadow(3),
   },
   strip: { width: "100%", height: 6 },
+  closeBtn: {
+    position: "absolute",
+    top: 14,
+    right: 14,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceAlt,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10,
+  },
   iconStage: { alignItems: "center", justifyContent: "center", marginTop: spacing.xl },
   halo: {
     position: "absolute",

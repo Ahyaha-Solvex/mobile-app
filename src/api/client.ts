@@ -1,6 +1,6 @@
 import axios from "axios";
-import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
+import { storageGet, storageSet, storageDelete } from "../utils/storage";
 
 export const TOKEN_KEY = "carcrash_token";
 
@@ -51,7 +51,7 @@ export async function resolveApiBaseUrl(): Promise<string> {
 api.interceptors.request.use(async (config) => {
   const base = await resolveApiBaseUrl();
   config.baseURL = base;
-  const token = await SecureStore.getItemAsync(TOKEN_KEY);
+  const token = await storageGet(TOKEN_KEY);
   if (token) {
     config.headers = config.headers || {};
     (config.headers as any).Authorization = `Bearer ${token}`;
@@ -61,8 +61,8 @@ api.interceptors.request.use(async (config) => {
 
 export async function setToken(token: string | null) {
   if (token) {
-    await SecureStore.setItemAsync(TOKEN_KEY, token);
+    await storageSet(TOKEN_KEY, token);
   } else {
-    await SecureStore.deleteItemAsync(TOKEN_KEY);
+    await storageDelete(TOKEN_KEY);
   }
 }

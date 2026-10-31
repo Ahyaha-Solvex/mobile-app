@@ -124,6 +124,12 @@ export default function CrashAlertOverlay({ visible, onDismiss }: Props) {
     onDismiss();
   }
 
+  function handleClose() {
+    // Close without acknowledging — treat like "no response yet", no alert is sent.
+    resetForNextAlert();
+    onDismiss();
+  }
+
   function handleHelp() {
     triggerEmergency();
   }
@@ -138,6 +144,12 @@ export default function CrashAlertOverlay({ visible, onDismiss }: Props) {
     <Modal visible transparent animationType="fade" statusBarTranslucent>
       <View style={styles.backdrop}>
         <View style={styles.card}>
+          {/* Close button (only while the user can still respond) */}
+          {!sending && !sent ? (
+            <TouchableOpacity style={styles.closeBtn} onPress={handleClose} hitSlop={6} accessibilityLabel="Close">
+              <Ionicons name="close" size={15} color={colors.textFaint} />
+            </TouchableOpacity>
+          ) : null}
           {/* Pulsing emergency icon */}
           <View style={styles.iconStage}>
             <Animated.View
@@ -247,6 +259,20 @@ const styles = StyleSheet.create({
     padding: spacing.xxl,
     alignItems: "center",
     ...shadow(3),
+  },
+  closeBtn: {
+    position: "absolute",
+    top: spacing.m,
+    right: spacing.m,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceAlt,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10,
   },
   iconStage: { alignItems: "center", justifyContent: "center", marginBottom: spacing.l },
   halo: {
